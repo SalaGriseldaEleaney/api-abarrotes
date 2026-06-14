@@ -147,6 +147,51 @@ app.post('/orders', (req, res) => {
     );
 });
 
+// Actualizar producto
+app.put('/products/:id', (req, res) => {
+    const { id } = req.params;
+    const { name, price, stock, category, status, imageBase64 } = req.body;
+
+    db.query(
+        'UPDATE products SET name = ?, price = ?, stock = ?, category = ?, status = ?, imageBase64 = ? WHERE id = ?',
+        [name, price, stock, category, status, imageBase64, id],
+        (err) => {
+            if (err) return res.status(500).json({ error: err });
+            res.json({ message: 'Producto actualizado' });
+        }
+    );
+});
+
+// Actualizar solo stock
+app.put('/products/:id/stock', (req, res) => {
+    const { id } = req.params;
+    const { stock } = req.body;
+    const status = stock > 0 ? 'DISPONIBLE' : 'AGOTADO';
+
+    db.query(
+        'UPDATE products SET stock = ?, status = ? WHERE id = ?',
+        [stock, status, id],
+        (err) => {
+            if (err) return res.status(500).json({ error: err });
+            res.json({ message: 'Stock actualizado' });
+        }
+    );
+});
+
+// Eliminar producto
+app.delete('/products/:id', (req, res) => {
+    const { id } = req.params;
+
+    db.query(
+        'DELETE FROM products WHERE id = ?',
+        [id],
+        (err) => {
+            if (err) return res.status(500).json({ error: err });
+            res.json({ message: 'Producto eliminado' });
+        }
+    );
+});
+
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en puerto ${PORT}`);
 });
