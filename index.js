@@ -69,9 +69,12 @@ db.query(`
 CREATE TABLE IF NOT EXISTS orders (
     id INT AUTO_INCREMENT PRIMARY KEY,
     userId INT,
+    productName VARCHAR(100),
+    quantity INT,
     total DECIMAL(10,2),
-    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (userId) REFERENCES users(id)
+    status VARCHAR(20),
+    storeId VARCHAR(100),
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )
 `, (err) => {
     if (err) {
@@ -135,14 +138,51 @@ app.get('/orders', (req, res) => {
 
 // Registrar pedido
 app.post('/orders', (req, res) => {
-    const { userId, total } = req.body;
+    const {
+        userId,
+        productName,
+        quantity,
+        total,
+        status,
+        storeId
+    } = req.body;
 
     db.query(
-        'INSERT INTO orders (userId, total) VALUES (?, ?)',
-        [userId, total],
+        `INSERT INTO orders
+        (userId, productName, quantity, total, status, storeId)
+        VALUES (?, ?, ?, ?, ?, ?)`,
+        [
+            userId,
+            productName,
+            quantity,
+            total,
+            status,
+            storeId
+        ],
         (err, result) => {
             if (err) return res.status(500).json({ error: err });
-            res.json({ message: 'Pedido registrado', id: result.insertId });
+
+            res.json({
+                message: 'Pedido registrado',
+                id: result.insertId
+            });
+        }
+    );
+});
+
+app.put('/orders/:id', (req, res) => {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    db.query(
+        'UPDATE orders SET status = ? WHERE id = ?',
+        [status, id],
+        (err) => {
+            if (err) return res.status(500).json({ error: err });
+
+            res.json({
+                message: 'Estado del pedido actualizado'
+            });
         }
     );
 });
