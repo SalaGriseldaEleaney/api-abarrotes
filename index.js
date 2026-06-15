@@ -84,13 +84,26 @@ CREATE TABLE IF NOT EXISTS orders (
     }
 });
 
+db.query(`ALTER TABLE orders ADD COLUMN productName VARCHAR(100)`, (err) => {
+    if (err) console.log("productName ya existe o error:", err.message);
+});
+
+db.query(`ALTER TABLE orders ADD COLUMN quantity INT`, (err) => {
+    if (err) console.log("quantity ya existe o error:", err.message);
+});
+
+db.query(`ALTER TABLE orders ADD COLUMN status VARCHAR(20)`, (err) => {
+    if (err) console.log("status ya existe o error:", err.message);
+});
+
+db.query(`ALTER TABLE orders ADD COLUMN storeId VARCHAR(100)`, (err) => {
+    if (err) console.log("storeId ya existe o error:", err.message);
+});
+
 // Obtener productos
 app.get('/products', (req, res) => {
-    db.query('SELECT * FROM products', (err, results) => {
-        if (err) return res.status(500).json({ error: err });
-        res.json(results);
-    });
 });
+
 
 // Agregar producto
 app.post('/products', (req, res) => {
