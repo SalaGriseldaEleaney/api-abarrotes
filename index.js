@@ -102,6 +102,10 @@ db.query(`ALTER TABLE orders ADD COLUMN storeId VARCHAR(100)`, (err) => {
 
 // Obtener productos
 app.get('/products', (req, res) => {
+    db.query('SELECT * FROM products', (err, results) => {
+        if (err) return res.status(500).json({ error: err });
+        res.json(results);
+    });
 });
 
 
